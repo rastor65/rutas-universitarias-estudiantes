@@ -1,17 +1,10 @@
 from django.urls import path
-from .views import (
-    ReservaListCreateView,
-    ReservaDetailView,
-    ListaDeEsperaListCreateView,
-    ListaDeEsperaDetailView,
-)
+from .views import ReservaCupoListCreateView, ReservaCupoDetailView
 
 urlpatterns = [
-    # Rutas de reservas
-    path('reservas/', ReservaListCreateView.as_view(), name='reserva-list-create'),
-    path('reservas/<uuid:pk>/', ReservaDetailView.as_view(), name='reserva-detail'),
+    # Listar todas las reservas o crear una nueva
+    path('', ReservaCupoListCreateView.as_view(), name='reserva-list-create'),
 
-    # Rutas de lista de espera
-    path('lista-espera/', ListaDeEsperaListCreateView.as_view(), name='lista-espera-list-create'),
-    path('lista-espera/<uuid:pk>/', ListaDeEsperaDetailView.as_view(), name='lista-espera-detail'),
+    # Obtener, actualizar o eliminar una reserva específica por su UUID
+    path('<uuid:pk>/', ReservaCupoDetailView.as_view(), name='reserva-detail'),
 ]

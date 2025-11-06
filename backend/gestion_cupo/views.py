@@ -1,65 +1,25 @@
-from rest_framework import generics, permissions, filters
+from rest_framework import generics
+from .models import ReservaCupo
+from .serializers import ReservaCupoSerializer
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Reserva, ListaDeEspera
-from .serializers import ReservaSerializer, ListaDeEsperaSerializer
-
-
-# -------------------------------------
-# RESERVAS
-# -------------------------------------
-class ReservaListCreateView(generics.ListCreateAPIView):
-    """
-    GET: lista todas las reservas del usuario autenticado.
-    POST: crea una nueva reserva asociada al usuario actual.
-    """
-    serializer_class = ReservaSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        # Solo muestra las reservas del usuario logueado
-        return Reserva.objects.filter(usuario=self.request.user)
+class ReservaCupoListCreateView(generics.ListCreateAPIView):
+    queryset = ReservaCupo.objects.all()
+    serializer_class = ReservaCupoSerializer
 
     def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user)
+        # Lógica: si el bus está lleno, asignar estado "EN_ESPERA"
+        bus = serializer.validated_data.get('bus')
+        reservas_activas = ReservaCupo.objects.filter(bus=bus, estado='RESERVADO').count()
+        capacidad = bus.capacidad  # Asegúrate que el modelo Bus tenga el campo "capacidad"
+
+        if reservas_activas >= capacidad:
+            serializer.save(estado='EN_ESPERA')
+        else:
+            serializer.save(estado='RESERVADO')
 
 
-class ReservaDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Permite ver, actualizar o eliminar una reserva específica.
-    """
-    serializer_class = ReservaSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return Reserva.objects.filter(usuario=self.request.user)
-
-
-# -------------------------------------
-# LISTA DE ESPERA
-# -------------------------------------
-class ListaDeEsperaListCreateView(generics.ListCreateAPIView):
-    """
-    GET: lista todas las entradas en lista de espera del usuario autenticado.
-    POST: crea una nueva entrada en lista de espera.
-    """
-    serializer_class = ListaDeEsperaSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return ListaDeEspera.objects.filter(usuario=self.request.user)
-
-    def perform_create(self, serializer):
-        serializer.save(usuario=self.request.user)
-
-
-class ListaDeEsperaDetailView(generics.RetrieveUpdateDestroyAPIView):
-    """
-    Permite ver, actualizar o eliminar una entrada específica de la lista de espera.
-    """
-    serializer_class = ListaDeEsperaSerializer
-    permission_classes = [permissions.IsAuthenticated]
-
-    def get_queryset(self):
-        return ListaDeEspera.objects.filter(usuario=self.request.user)
+class ReservaCupoDetailView(generics.RetrieveUpdateDestroyAPIView):
+    queryset = ReservaCupo.objects.all()
+    serializer_class = ReservaCupoSerializer

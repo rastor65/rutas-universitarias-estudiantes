@@ -1,58 +1,29 @@
 from rest_framework import serializers
-from .models import Reserva, ListaDeEspera
-from accounts.models import User
+from .models import ReservaCupo
 
 
-class UserSimpleSerializer(serializers.ModelSerializer):
-    """Serializer simplificado para mostrar datos básicos del usuario"""
-    class Meta:
-        model = User
-        fields = ['id', 'username', 'first_name', 'last_name']
-
-
-class ReservaSerializer(serializers.ModelSerializer):
-    usuario = UserSimpleSerializer(read_only=True)
+class ReservaCupoSerializer(serializers.ModelSerializer):
+    """
+    Serializador para el modelo ReservaCupo con validación automática
+    de capacidad. Si se supera la capacidad del bus o ruta, el estado
+    pasa a 'EN_ESPERA'.
+    """
 
     class Meta:
-        model = Reserva
-        fields = [
-            'id',
-            'usuario',
-            'ruta',
-            'fecha_reserva',
-            'updated_at',
-            'estado',
-            'motivo_cancelacion',
-        ]
-        read_only_fields = ['id', 'fecha_reserva', 'updated_at']
+        model = ReservaCupo
+        fields = '__all__'
 
     def create(self, validated_data):
-        # El usuario se asigna automáticamente desde la vista
-        request = self.context.get('request')
-        if request and hasattr(request, 'user'):
-            validated_data['usuario'] = request.user
-        return super().create(validated_data)
+        ruta = validated_data.get('ruta')
+        estado = validated_data.get('estado', 'ACTIVA')
 
+        # Contar cuántas reservas activas existen actualmente
+        reservas_activas = ReservaCupo.objects.filter(ruta=ruta, estado='ACTIVA').count()
 
-class ListaDeEsperaSerializer(serializers.ModelSerializer):
-    usuario = UserSimpleSerializer(read_only=True)
+        if ruta and ruta.capacidad_activa and reservas_activas >= ruta.capacidad_activa:
+            # Si la capacidad se supera, poner en lista de espera
+            validated_data['estado'] = 'EN_ESPERA'
+        else:
+            validated_data['estado'] = estado
 
-    class Meta:
-        model = ListaDeEspera
-        fields = [
-            'id',
-            'usuario',
-            'ruta',
-            'posicion',
-            'fecha_inscripcion',
-            'updated_at',
-            'estado',
-        ]
-        read_only_fields = ['id', 'fecha_inscripcion', 'updated_at']
-
-    def create(self, validated_data):
-        # Igual que en reserva, el usuario se asigna automáticamente
-        request = self.context.get('request')
-        if request and hasattr(request, 'user'):
-            validated_data['usuario'] = request.user
         return super().create(validated_data)
