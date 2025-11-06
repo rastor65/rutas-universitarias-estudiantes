@@ -20,6 +20,7 @@ urlpatterns = [
     path("api/accounts/", include("accounts.urls")),
     path("api/gestion-cupo/", include("gestion_cupo.urls")),
     path('api/rutas/', include("rutas.urls")),
+    path('api/gps/', include('gps.urls')),
 
     # Documentación OpenAPI
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),

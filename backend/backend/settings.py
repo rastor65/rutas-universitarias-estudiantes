@@ -28,6 +28,7 @@ INSTALLED_APPS = [
     "accounts.apps.AccountsConfig",
     "gestion_cupo.apps.GestionCupoConfig",
     "rutas.apps.RutasConfig",
+    "gps.apps.GpsConfig",
 ]
 
 MIDDLEWARE = [
