@@ -7,6 +7,10 @@ from django.conf.urls.static import static
 from drf_spectacular.views import SpectacularAPIView, SpectacularSwaggerView
 from accounts.views import HealthCheckView
 
+
+
+#hola
+
 urlpatterns = [
     # Admin y estado del sistema
     path("admin/", admin.site.urls),
