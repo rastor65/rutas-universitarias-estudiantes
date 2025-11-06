@@ -14,6 +14,7 @@ urlpatterns = [
 
     # Apps principales
     path("api/accounts/", include("accounts.urls")),
+    path("api/gestion-cupo/", include("gestion_cupo.urls")),
 
     # Documentación OpenAPI
     path("api/schema/", SpectacularAPIView.as_view(), name="schema"),
