@@ -272,4 +272,3 @@ class PermissionViewSet(AuditMixin, viewsets.ModelViewSet):
     def get_permissions(self):
         self.required_scopes = self.get_required_scopes()
         return super().get_permissions()
-
