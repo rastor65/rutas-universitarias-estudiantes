@@ -6,6 +6,14 @@ class Ruta(models.Model):
     capacidad_activa = models.IntegerField(blank=True, null=True, verbose_name="Capacidad activa")
     capacidad_espera = models.IntegerField(blank=True, null=True, verbose_name="Capacidad de espera")
 
+    # Relación muchos a muchos con Bus
+    buses = models.ManyToManyField(
+        'Bus',
+        related_name='rutas',
+        blank=True,
+        verbose_name='Buses asignados'
+    )
+
     def __str__(self):
         return self.nombre_ruta
 
@@ -20,15 +28,6 @@ class Bus(models.Model):
     modelo = models.CharField(max_length=50, verbose_name="Modelo del bus")
     capacidad = models.IntegerField(blank=True, null=True, verbose_name="Capacidad del bus")
     estado_bus = models.CharField(max_length=50, verbose_name="Estado del bus")
-    
-    # Un bus posee una ruta, pero puede cambiarse si se vara
-    ruta = models.ForeignKey(
-        Ruta,
-        on_delete=models.SET_NULL,
-        related_name="buses",
-        null=True,
-        blank=True
-    )
 
     def __str__(self):
         return f"{self.placa} - {self.marca}"
@@ -37,26 +36,11 @@ class Bus(models.Model):
         verbose_name = "Bus"
         verbose_name_plural = "Buses"
 
-class Parada(models.Model):
-    nombre_parada = models.CharField(max_length=100, verbose_name="Nombre de la parada")
-    direccion = models.CharField(max_length=150, verbose_name="Dirección")
-    tipo_punto = models.CharField(max_length=50, verbose_name="Tipo de punto")
-    
-    # Muchas paradas pertenecen a una ruta
-    ruta = models.ForeignKey(Ruta, on_delete=models.CASCADE, related_name="paradas")
-
-    def __str__(self):
-        return self.nombre_parada
-
-    class Meta:
-        verbose_name = "Parada"
-        verbose_name_plural = "Paradas"
-
 
 class TipoEstado(models.Model):
     nombre_estado = models.CharField(max_length=100, verbose_name="Nombre del estado")
     descripcion = models.TextField(blank=True, null=True, verbose_name="Descripción del estado")
-    
+
     # Muchos estados pertenecen a una ruta
     ruta = models.ForeignKey(Ruta, on_delete=models.CASCADE, related_name="tipos_estado")
 
