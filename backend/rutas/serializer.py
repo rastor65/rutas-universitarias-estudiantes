@@ -1,23 +1,24 @@
 from rest_framework import serializers
-from .models import Ruta, Bus, Parada, TipoEstado
+from .models import Ruta, Bus, TipoEstado
 
-
-class RutaSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Ruta
-        fields = '__all__'
 
 class BusSerializer(serializers.ModelSerializer):
     class Meta:
         model = Bus
         fields = '__all__'
 
-class ParadaSerializer(serializers.ModelSerializer):
+
+class RutaSerializer(serializers.ModelSerializer):
+    # Mostramos los buses asociados
+    buses = BusSerializer(many=True, read_only=True)
+
     class Meta:
-        model = Parada
+        model = Ruta
         fields = '__all__'
 
+
 class TipoEstadoSerializer(serializers.ModelSerializer):
-    class Meta: 
+    class Meta:
         model = TipoEstado
         fields = '__all__'
+

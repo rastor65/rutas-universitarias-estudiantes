@@ -35,6 +35,7 @@ class ReservaCupo(models.Model):
         help_text="Posición en la lista de espera si aplica"
     )
     motivo_cancelacion = models.TextField(blank=True, null=True)
+    
 
     def __str__(self):
         return f"{self.usuario.username} - {self.ruta.nombre_ruta} ({self.estado})"
