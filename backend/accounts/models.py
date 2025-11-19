@@ -48,8 +48,8 @@ class Resource(models.Model):
     name = models.CharField(max_length=120)
     description = models.TextField(blank=True)
     icon = models.CharField(max_length=100, blank=True)
-    link_frontend = models.CharField(blank=True)
-    link_backend = models.CharField(blank=True)
+    link_frontend = models.CharField(blank=True, null=True, max_length=255)
+    link_backend = models.CharField(blank=True, null=True, max_length=255)
 
     roles = models.ManyToManyField("Role", related_name="resources", through="RoleResource")
 
@@ -82,7 +82,7 @@ class UserActivityLog(models.Model):
     action = models.CharField(max_length=100)
     description = models.TextField(blank=True)
     ip_address = models.GenericIPAddressField(blank=True, null=True)
-    device = models.CharField(max_length=100, blank=True)
+    device = models.CharField(max_length=512, blank=True)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -79,7 +79,7 @@ if db_engine == "postgres":
             "USER": os.getenv("DB_USER", "postgres_user"),
             "PASSWORD": os.getenv("DB_PASSWORD", ""),
             "HOST": os.getenv("DB_HOST", "localhost"),
-            "PORT": os.getenv("DB_PORT", "5432"),
+            "PORT": int(os.getenv("DB_PORT", "5432")),
         }
     }
 elif(db_engine == "mysql"):
@@ -90,7 +90,7 @@ elif(db_engine == "mysql"):
             "USER": os.getenv("DB_USER", "mysql_user"),
             "PASSWORD": os.getenv("DB_PASSWORD", ""),
             "HOST": os.getenv("DB_HOST", "localhost"),
-            "PORT": os.getenv("DB_PORT", "3306"),
+            "PORT": int(os.getenv("DB_PORT", "3306")),
         }
     }
 else:
