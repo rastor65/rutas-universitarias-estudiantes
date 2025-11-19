@@ -26,7 +26,7 @@ class Command(BaseCommand):
     def handle(self, *args, **options):
         # Recursos
         for key, name in RESOURCES:
-            Resource.objects.get_or_create(key=key, defaults={"name": name})
+            Resource.objects.get_or_create(name=name, defaults={"name": name})
 
         # Roles + asignación de recursos
         for role_name, keys in ROLES.items():

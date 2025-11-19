@@ -1,10 +1,18 @@
 from pathlib import Path
 import os
 from datetime import timedelta
+from dotenv import load_dotenv
+
+
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 
-SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
+# cargar .env desde la raíz del repo (../.env)
+dotenv_path = BASE_DIR.parent / ".env"
+if dotenv_path.exists():
+    load_dotenv(dotenv_path)
+
+SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "django-insecure-9u&=hsfea00vpx@j07wqyvxa!ep7&jfvlw=yipho&rgp^oj$!f")
 DEBUG = os.getenv("DJANGO_DEBUG", "True") == "True"
 ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "*").split(",")
 
@@ -62,15 +70,27 @@ TEMPLATES = [{
 WSGI_APPLICATION = "backend.wsgi.application"
 
 # DB: SQLite por defecto; PostgreSQL si DB_ENGINE=postgres
-if os.getenv("DB_ENGINE", "sqlite") == "postgres":
+db_engine = os.getenv("DB_ENGINE", "sqlite")
+if db_engine == "postgres":
     DATABASES = {
         "default": {
             "ENGINE": "django.db.backends.postgresql",
             "NAME": os.getenv("DB_NAME", "rutas_universitarias"),
-            "USER": os.getenv("DB_USER", "postgres"),
+            "USER": os.getenv("DB_USER", "postgres_user"),
             "PASSWORD": os.getenv("DB_PASSWORD", ""),
             "HOST": os.getenv("DB_HOST", "localhost"),
-            "PORT": os.getenv("DB_PORT", "5432"),
+            "PORT": int(os.getenv("DB_PORT", "5432")),
+        }
+    }
+elif(db_engine == "mysql"):
+    DATABASES = {
+        "default": {
+            "ENGINE": "django.db.backends.mysql",
+            "NAME": os.getenv("DB_NAME", "rutas_universitarias"),
+            "USER": os.getenv("DB_USER", "mysql_user"),
+            "PASSWORD": os.getenv("DB_PASSWORD", ""),
+            "HOST": os.getenv("DB_HOST", "localhost"),
+            "PORT": int(os.getenv("DB_PORT", "3306")),
         }
     }
 else:
